@@ -21,7 +21,8 @@ PowerMeterA.on('powerData', AntData =>{
     
     let time = Date.now();
     AntData.timestamp = time;
-    if(sockets[0]) sockets[0].send({"measure": JSON.stringify(AntData)});
+    let data2send = JSON.stringify({"measures":AntData})
+    if(sockets[0]) sockets[0].send(data2send);
 })
 
 // HTTP server
@@ -51,5 +52,5 @@ wss.on('connection', function connection(ws){
     ws.on('message', function incoming(message){
         console.log('Received: %s', message);
     })
-    ws.send({"devices":[PowerMeterA_Id, PowerMeterB_Id]})
+    ws.send(JSON.stringify({"devices":[PowerMeterA_Id, PowerMeterB_Id]}))
 })

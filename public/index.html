@@ -67,10 +67,16 @@
         websocket.onmessage = function(message){
             console.log("Received: " + message.data);
             let rcvData = JSON.parse(message.data);
-            let data ={};
-            data.time = rcvData.timestamp;
-            data.power = rcvData.Power;
-            onRefresh(chart, datasetIdx, data);
+            if(rcvData.devices){
+                console.log(rcvData);
+            }
+            
+            if(rcvData.measures){
+                let data ={};
+                data.time = rcvData.timestamp;
+                data.power = rcvData.Power;
+                onRefresh(chart, datasetIdx, data);
+            }
         }
 
     }
