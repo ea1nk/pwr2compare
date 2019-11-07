@@ -41,20 +41,22 @@
     var pwrDevices=[];
 
     $(document).ready(function () {
-        openWebSocket();
+        let host = window.location.host;
+        let ipAddress = host.split(":")[0];
+        openWebSocket(ipAddress);
         initializeChart();
     })
 
-    function onRefresh(chart, dataset, data) {
+    function onRefresh(chart, dataset, measures) {
             
             chart.data.datasets[dataset].data.push({
-                    x: data.time,
-                    y: data.power + Math.random()
+                    x: measures.timestamp,
+                    y: measures.Power
                 })
             
         }
-    function openWebSocket(){
-        var websocket = new WebSocket('ws:///localhost:8091');
+    function openWebSocket(ipAddress){
+        var websocket = new WebSocket('ws://'+ipAddress+':8091');
 
         websocket.onopen = function(){
             console.log("Connected to websocket");
@@ -64,19 +66,17 @@
             console.log("WebSocket error:" + error);
         }
 
-        websocket.onmessage = function(message){
-            console.log("Received: " + message.data);
+        websocket.onmessage = function (message) {
+            //console.log("Received: " + message.data);
             let rcvData = JSON.parse(message.data);
-            if(rcvData.devices){
-                console.log(rcvData);
+            if (rcvData.devices) {
+                //console.log(rcvData.devices);
             }
-            
-            if(rcvData.measures){
-                let data ={};
-                data.time = rcvData.timestamp;
-                data.power = rcvData.Power;
-                onRefresh(chart, datasetIdx, data);
-            }
+
+            if (rcvData.measures0) { var datasetIdx = 0 ; var data = rcvData.measures0}
+            if (rcvData.measures1) { var datasetIdx = 1 ; var data = rcvData.measures1}
+            onRefresh(chart, datasetIdx, data);
+
         }
 
     }
@@ -90,14 +90,14 @@
                     label: '1',
                     borderColor:'rgb(204, 230, 255)',
                     borderWidth:1,
-                    backgroundColor:'rgb(204, 230, 255, 0.7)',
+                    backgroundColor:'rgb(204, 230, 255, 0.5)',
                     pointRadius: 0,
                     data: []
                 }, {
                     label: '2',
                     borderColor:'rgb(255, 238, 204)',
-                    borderWidth:0.5,
-                    backgroundColor:'rgb(255, 238, 204, 0.7)',
+                    borderWidth:1,
+                    backgroundColor:'rgb(255, 238, 204, 0.5)',
                     pointRadius: 0,
                     data: []
                 }]
@@ -125,11 +125,11 @@
                     }]
                 },
                 tooltips:{
-                    mode:'index',
+                    mode:'nearest',
                     intersect: false
                 },
                 hover:{
-                    mode:'index',
+                    mode:'nearest',
                     intersect: false
                 },
                 plugins:{

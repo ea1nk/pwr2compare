@@ -21,7 +21,15 @@ PowerMeterA.on('powerData', AntData =>{
     
     let time = Date.now();
     AntData.timestamp = time;
-    let data2send = JSON.stringify({"measures":AntData})
+    let data2send = JSON.stringify({"measures0":AntData})
+    if(sockets[0]) sockets[0].send(data2send);
+})
+
+PowerMeterB.on('powerData', AntData =>{
+    
+    let time = Date.now();
+    AntData.timestamp = time;
+    let data2send = JSON.stringify({"measures1":AntData})
     if(sockets[0]) sockets[0].send(data2send);
 })
 
