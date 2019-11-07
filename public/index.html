@@ -37,22 +37,21 @@
 
 </body>
 <script>
-    
+    var chart;
+    var pwrDevices=[];
 
     $(document).ready(function () {
         openWebSocket();
         initializeChart();
     })
 
-    function onRefresh(chart) {
-
-            chart.data.datasets.forEach(function (dataset) {
-                dataset.data.push({
-                    x: Date.now(),
-                    y: Math.random()
+    function onRefresh(chart, dataset, data) {
+            
+            chart.data.datasets[dataset].data.push({
+                    x: data.time,
+                    y: data.power + Math.random()
                 })
-            })
-
+            
         }
     function openWebSocket(){
         var websocket = new WebSocket('ws:///localhost:8091');
@@ -67,13 +66,18 @@
 
         websocket.onmessage = function(message){
             console.log("Received: " + message.data);
+            let rcvData = JSON.parse(message.data);
+            let data ={};
+            data.time = rcvData.timestamp;
+            data.power = rcvData.Power;
+            onRefresh(chart, datasetIdx, data);
         }
 
     }
     function initializeChart() {
 
         var ctx = document.getElementById('realtime_measures').getContext('2d');
-        var chart = new Chart(ctx, {
+        chart = new Chart(ctx, {
             type: 'line',
             data: {
                 datasets: [{
@@ -101,7 +105,7 @@
                         },
                         type: 'realtime',
                         realtime:{
-                            onRefresh: onRefresh,
+                            //onRefresh: onRefresh,
                             duration:30000,
                             refresh: 250,
                             delay :1000
