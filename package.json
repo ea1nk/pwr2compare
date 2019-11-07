@@ -1,0 +1,24 @@
+{
+  "name": "pwr2compare",
+  "version": "1.0.0",
+  "description": "Ant+ Power Meter Comparator",
+  "main": "index.js",
+  "scripts": {
+    "test": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ea1nk/pwr2compare.git"
+  },
+  "author": "Juan J. Lamas .:EA1NK:.",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ea1nk/pwr2compare/issues"
+  },
+  "homepage": "https://github.com/ea1nk/pwr2compare#readme",
+  "dependencies": {
+    "ant-plus": "^0.1.24",
+    "express": "^4.17.1",
+    "ws": "^7.2.0"
+  }
+}
