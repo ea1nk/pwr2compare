@@ -20,3 +20,7 @@ If no averaging factor is provided, it will be defaulted to 3 seconds.
 ```
 node server.js ID1 ID2 averaging_time
 ```
+
+Open a browser at http://localhost:8090 and enjoy!
+
+Recorded data can be exported to a spreadsheet for further analysis.
