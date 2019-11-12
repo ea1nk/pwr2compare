@@ -61,7 +61,7 @@
     var chart;
     var pwrDevices=[];
     var xlsBuffer={0:[], 1:[]};
-
+    
     $(document).ready(function () {
         let host = window.location.host;
         let ipAddress = host.split(":")[0];
@@ -70,7 +70,7 @@
     })
 
     function onRefresh(chart, dataset, measures) {
-        
+            if(measures.Power == null) return;
             chart.options.scales.xAxes[0].realtime.delay = measures.Averaging * 1000
             chart.data.datasets[dataset].data.push({
                 x: measures.timestamp,
@@ -140,8 +140,8 @@
                         realtime:{
                             //onRefresh: onRefresh,
                             duration:60000, //1 minute Window
-                            refresh: 250,
-                            delay :1000
+                            refresh: 500,
+                            delay : 1000
                             
                         }
                     }],
