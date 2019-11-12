@@ -1,7 +1,7 @@
 <html>
 
 <head>
-    <title>.:Realtime:.</title>
+    <title>.:pwr2compare:.</title>
     <script tye='text/javascript' src='https://code.jquery.com/jquery-3.4.1.js'></script>
     <script type='text/javascript' src='./js/moment.js'></script>
     <script type='text/javascript' src='./js/Chart.min.js'></script>
@@ -10,8 +10,9 @@
     <script type='text/javascript' src='./js/chartjs-plugin-annotation.js'></script>
     <script type='text/javascript' src='https://cdn.jsdelivr.net/npm/chartjs-plugin-draggable@0.1.6/dist/chartjs-plugin-draggable.min.js'></script>
     <script type='text/javascript' src='https://cdn.jsdelivr.net/npm/chartjs-plugin-crosshair@1.1.2'></script>
-    
-    <link rel='stylesheet' href='./js/Chart.min.css'></link>
+
+    <link rel='stylesheet' href='./js/Chart.min.css'>
+
 
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
@@ -21,25 +22,45 @@
 
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/3.0.0/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.min.js"></script>
+    <style>
+        .centered {
+            display: flex;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
 </head>
 
 <body>
-
+<div class='container centered'>
     <div class="panel panel-default md-col-12">
         <div class='panel-heading'>
-            Realtime Measures
+           <h3>.: pwr2compare :.
+               <br><small class='text-muted'>Simple Power Meter Comparator</small>
+           </h3>
+
         </div>
-        <div class="panel-body">
+        <div class="panel-body md-col-12">
             <canvas id='realtime_measures' style='width:100%;height:350px'></canvas>
         </div>
+        
+        <button class='btn btn-primary' style='width:100%' onclick="createXLS()">Download Data 
+        <span class='badge badge-light' style='padding-left:10px' id='sampleCounter'></span></button>
+        </button>
+        <div class='panel-footer'>
+            <footer class ='text-center'>2019 Juan J. Lamas .:EA1NK:.</footer>
+        </div>
     </div>
-
+</div>
 </body>
 <script>
     var chart;
     var pwrDevices=[];
-   
+    var xlsBuffer={0:[], 1:[]};
+
     $(document).ready(function () {
         let host = window.location.host;
         let ipAddress = host.split(":")[0];
@@ -48,14 +69,15 @@
     })
 
     function onRefresh(chart, dataset, measures) {
-            
-            chart.options.scales.xAxes.realtime.delay = measures.Averaging * 1000
+        
+            chart.options.scales.xAxes[0].realtime.delay = measures.Averaging * 1000
             chart.data.datasets[dataset].data.push({
-                    x: measures.timestamp,
-                    y: measures.Power
-                })
-            
-        }
+                x: measures.timestamp,
+                y: measures.Power
+            })
+            xlsBuffer[dataset].push({"x": measures.timestamp, "y": measures.Power})
+            $('#sampleCounter').text(xlsBuffer[0].length + ' Samples')
+    }
     function openWebSocket(ipAddress){
         var websocket = new WebSocket('ws://'+ipAddress+':8091');
         websocket.onopen = function(){
@@ -70,12 +92,16 @@
             //console.log("Received: " + message.data);
             let rcvData = JSON.parse(message.data);
             if (rcvData.devices) {
-                //console.log(rcvData.devices);
+                try{
+                    chart.data.datasets[0].label = 'ANT+ Device: ' + rcvData.devices[0]
+                    chart.data.datasets[1].label = 'ANT+ Device: ' + rcvData.devices[1]
+                    chart.render()
+                }catch(e){}
             }
 
             if (rcvData.measures0) { var datasetIdx = 0 ; var data = rcvData.measures0}
             if (rcvData.measures1) { var datasetIdx = 1 ; var data = rcvData.measures1}
-            onRefresh(chart, datasetIdx, data);
+            try{onRefresh(chart, datasetIdx, data)} catch(e){}
 
         }
 
@@ -172,5 +198,31 @@
 
     }
 
+    async function createXLS() {
+
+            const wb = new ExcelJS.Workbook()
+            var xlsKeys = Object.keys(xlsBuffer)
+
+            for (i = 0; i < xlsKeys.length; i++) {
+                const ws = wb.addWorksheet('PWR ' + i);
+                ws.columns = [
+                    { header: 'TIMESTAMP', key: 'a', width: '20' },
+                    { header: 'POWER', key: 'b', width: '20' }
+                ]
+                var data = createXLSData(xlsBuffer[i]);
+                ws.addRows(data)
+            }
+            const buf = await wb.xlsx.writeBuffer()
+
+            saveAs(new Blob([buf]), 'pwr2compare.xlsx')
+        }
+
+    function createXLSData(data){
+        var rows = [];
+        data.forEach(entry =>{
+            rows.push({a:entry.x, b:entry.y})
+        })
+        return rows;
+    }
 </script>
 </html>
