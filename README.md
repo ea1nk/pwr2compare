@@ -11,7 +11,7 @@ NodeJS >= v9.0
 
 Ant+ USB Dongle
 
-Tested on RaspberryPi 3B+ but might work on any Linux based machine (MacOs & Windows untested).
+Tested on RaspberryPi 3B+ but should work on any Linux based machine (MacOs & Windows untested).
 
 **Installation:**
 
