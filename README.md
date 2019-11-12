@@ -7,8 +7,10 @@ Simple NodeJS based tool to compare the measures from two ANT+ cycling power met
 **Requirements:**
 
 NodeJS >= v9.0
+
 Ant+ USB Dongle
-Tested on RaspberryPi 3B+ but might work in any Linux based machine.
+
+Tested on RaspberryPi 3B+ but might work on any Linux based machine (MacOs & Windows untested).
 
 **Installation:**
 
