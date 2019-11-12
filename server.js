@@ -4,10 +4,10 @@ if(myArgs.length < 2){
     return
 }
 
-//const PowerMeterA_Id = 847; //Tacx Neo
+
 var PowerMeterA_Id = myArgs[0]
 var PowerMeterB_Id = myArgs[1]
-//const PowerMeterB_Id = 22043; //Assioma Duo
+
 if(!myArgs[2]){
     var average_factor = 3 //3 sec averaging default
 } else {
