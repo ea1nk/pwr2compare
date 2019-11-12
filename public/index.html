@@ -39,7 +39,7 @@
 <script>
     var chart;
     var pwrDevices=[];
-
+   
     $(document).ready(function () {
         let host = window.location.host;
         let ipAddress = host.split(":")[0];
@@ -49,6 +49,7 @@
 
     function onRefresh(chart, dataset, measures) {
             
+            chart.options.scales.xAxes.realtime.delay = measures.Averaging * 1000
             chart.data.datasets[dataset].data.push({
                     x: measures.timestamp,
                     y: measures.Power
@@ -57,7 +58,6 @@
         }
     function openWebSocket(ipAddress){
         var websocket = new WebSocket('ws://'+ipAddress+':8091');
-
         websocket.onopen = function(){
             console.log("Connected to websocket");
         }
@@ -112,7 +112,7 @@
                         type: 'realtime',
                         realtime:{
                             //onRefresh: onRefresh,
-                            duration:30000,
+                            duration:60000, //1 minute Window
                             refresh: 250,
                             delay :1000
                             

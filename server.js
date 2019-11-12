@@ -5,9 +5,13 @@ let PowerMeterA = new Ant.BicyclePowerSensor(AntPlusStick);
 let PowerMeterB = new Ant.BicyclePowerSensor(AntPlusStick);
 const PowerMeterA_Id = 847; //Tacx Neo
 const PowerMeterB_Id = 22043; //Assioma Duo
+var average_factor = 3 //3 sec averaging
+var start_time = Date.now()
+var measureBuffer = []
 
 AntPlusStick.on('startup', function(){
     console.log("Ant+ device ready");
+    console.log("Averaging measures to " + average_factor + " seconds \n")
     PowerMeterA.attach(0,PowerMeterA_Id);
     PowerMeterB.attach(1,PowerMeterB_Id);
 
@@ -19,20 +23,46 @@ if(!AntPlusStick.open()){
 
 PowerMeterA.on('powerData', AntData =>{
     
-    let time = Date.now();
-    AntData.timestamp = time;
-    let data2send = JSON.stringify({"measures0":AntData})
-    if(sockets[0]) sockets[0].send(data2send);
+    let time = Date.now(); //Time of measure
+    if(time - start_time > average_factor*1000){
+        AntData.timestamp = time;
+        AntData.Power = average(measureBuffer)
+        AntData.Averaging = average_factor
+        let data2send = JSON.stringify({"measures0":AntData})
+        console.log("["+ new Date(start_time) + "] " + data2send)
+        if(sockets[0]) sockets[0].send(data2send)
+        start_time = time
+        measureBuffer = []
+    } else {
+        measureBuffer.push(AntData.Power)
+    }
+    
+})
+
+PowerMeterA.on('error', err =>{
+    
 })
 
 PowerMeterB.on('powerData', AntData =>{
     
-    let time = Date.now();
-    AntData.timestamp = time;
-    let data2send = JSON.stringify({"measures1":AntData})
-    if(sockets[0]) sockets[0].send(data2send);
+    let time = Date.now(); //Time of measure
+    if(time - start_time > average_factor*1000){
+        AntData.timestamp = time;
+        AntData.Power = average(measureBuffer);
+        AntData.Averaging = average_factor
+        let data2send = JSON.stringify({"measures1":AntData})
+        console.log("["+ new Date(start_time) + "] " + data2send)
+        if(sockets[0]) sockets[0].send(data2send);
+        start_time = time
+        measureBuffer = []
+    } else {
+        measureBuffer.push(AntData.Power)
+    }
 })
 
+PowerMeterB.on('error', err =>{
+
+})
 // HTTP server
 const express = require('express');
 const app = express();
@@ -62,3 +92,13 @@ wss.on('connection', function connection(ws){
     })
     ws.send(JSON.stringify({"devices":[PowerMeterA_Id, PowerMeterB_Id]}))
 })
+
+function average(powerData){
+    var measures = powerData.length;
+    var sum = 0;
+    for(var i=0;i<measures;i++){
+        sum += powerData[i]
+    }
+
+    return(sum/measures);
+}
