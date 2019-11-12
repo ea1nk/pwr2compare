@@ -3,6 +3,13 @@ Basic cycling power meter comparator
 ---
 Simple NodeJS based tool to compare the measures from two ANT+ cycling power meters.
 
+
+**Requirements:**
+
+NodeJS >= v9.0
+Ant+ USB Dongle
+Tested on RaspberryPi 3B+ but might work in any Linux based machine.
+
 **Installation:**
 
 ```
