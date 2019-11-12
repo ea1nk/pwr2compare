@@ -123,9 +123,9 @@ function average(powerData){
     } else {
         frozenWatts = 0;
     }
-    if(frozenWatts > 3) {
+    if(frozenWatts > 1) {
         //Favero Assioma curiosity 
-        //Asuming if three buffers have all the measures equal we are not pedaling.
+        //Asuming if two buffers have all the measures equal we are not pedaling.
         return 0 
     } else {
         return(sum/measures)
