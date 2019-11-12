@@ -14,9 +14,9 @@ npm install
 
 **Usage:**
 
-Both ANT+ device IDs and an optional averaging time in seconds must be provided.
+Both ANT+ device IDs are required and an optional averaging time in seconds might be provided.
 
-If no averaging factor is provided, it will be defaulted to 3 seconds.
+If no averaging factor is provided, it will be set to 3 seconds.
 ```
 node server.js ID1 ID2 averaging_time
 ```
