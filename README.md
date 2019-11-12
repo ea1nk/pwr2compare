@@ -3,6 +3,7 @@ Basic cycling power meter comparator
 ---
 Simple NodeJS based tool to compare the measures from two ANT+ cycling power meters.
 
+![Screenshot](pwr2compare.png)
 
 **Requirements:**
 
