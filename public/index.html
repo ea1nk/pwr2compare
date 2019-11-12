@@ -37,18 +37,23 @@
 
 <body>
 <div class='container'>
-    <div class="panel panel-default md-col-12">
+    <div class="panel panel-default col-md-12">
         <div class='panel-heading'>
            <h3>.: pwr2compare :.
                <br><small class='text-muted'>Simple Cycling Power Meter Comparator</small>
            </h3>
 
         </div>
-        <div class="panel-body md-col-12">
+        <div class='col-md-12 panel-heading'>
+            <button class='col-md-4 btn-primary' id='downloadButton' onclick='downloadGraph()'>Download Image</button>
+            <button class='col-md-4 btn-primary' id='stopButton' onclick='stopGraph()'>Stop Plot</button>
+            <button class='col-md-4 btn-primary' id='clearButton' onclick='clearGraph()'>Clear Graph</button>
+        </div>
+        <div class="panel-body col-md-12">
             <canvas id='realtime_measures' style='width:100%;height:350px'></canvas>
         </div>
         
-        <button class='btn btn-primary' style='width:100%' onclick="createXLS()">Download Data 
+        <button class='btn btn-primary col-md-12' style='width:100%' onclick="createXLS()">Download Data 
         <span class='badge badge-light' style='padding-left:10px' id='sampleCounter'></span></button>
         </button>
         <div class='panel-footer'>
@@ -110,6 +115,7 @@
     function initializeChart() {
 
         var ctx = document.getElementById('realtime_measures').getContext('2d');
+        
         chart = new Chart(ctx, {
             type: 'line',
             data: {
@@ -130,6 +136,15 @@
                 }]
             },
             options: {
+                title:{
+                   display:true,
+                   text: 'pwr2compare',
+                   position: 'bottom',
+                   padding: 5,
+                   fontSize: 10,
+                   fontColor: '#FFF',
+                   fontStyle: 'bold' 
+                },
                 scales: {
                     xAxes: [{
                         display: false,
@@ -224,6 +239,40 @@
             rows.push({a:entry.x, b:entry.y})
         })
         return rows;
+    }
+
+    function downloadGraph(){
+        var canvas = document.getElementById('realtime_measures');
+        canvas.toBlob(function (blob) {
+            saveAs(blob, "pwr2compare.png");
+        });
+    }
+
+    function clearGraph(){
+        chart.data.datasets.forEach(dataset =>{
+            dataset.data = []
+        })
+        xlsBuffer = {0:[],1:[]}
+        chart.render();
+    }
+
+    function stopGraph(){
+        var current_state = chart.options.plugins.streaming.pause;
+        switch (current_state){
+            case true:
+            //Is paused, lets resume
+            chart.options.plugins.streaming.pause = false
+            chart.update()
+            $('#stopButton').text('Stop Plot')
+            break;
+
+            case false:
+            //Is streaming, lets stop
+            chart.options.plugins.streaming.pause = true
+            chart.update()
+            $('#stopButton').text('Restart Plot')
+            break;
+        }
     }
 </script>
 </html>
