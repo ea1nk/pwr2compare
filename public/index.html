@@ -45,6 +45,11 @@
 
         </div>
         <div class='col-md-12 panel-heading'>
+            <button class='col-md-6 btn-primary' id='startButton' onclick='startRecording()'>Start Recording</button>
+            <button class='col-md-6 btn-primary' id='startButton' onclick='stopRecording()'>Stop Recording</button>
+
+        </div>
+        <div class='col-md-12 panel-heading'>
             <button class='col-md-4 btn-primary' id='downloadButton' onclick='downloadGraph()'>Download Image</button>
             <button class='col-md-4 btn-primary' id='stopButton' onclick='stopGraph()'>Stop Plot</button>
             <button class='col-md-4 btn-primary' id='clearButton' onclick='clearGraph()'>Clear Graph</button>
@@ -66,6 +71,7 @@
     var chart;
     var pwrDevices=[];
     var xlsBuffer={0:[], 1:[]};
+    var websocket;
     
     $(document).ready(function () {
         let host = window.location.host;
@@ -85,7 +91,7 @@
             $('#sampleCounter').text(xlsBuffer[0].length + ' Samples')
     }
     function openWebSocket(ipAddress){
-        var websocket = new WebSocket('ws://'+ipAddress+':8091');
+        websocket = new WebSocket('ws://'+ipAddress+':8091');
         websocket.onopen = function(){
             console.log("Connected to websocket");
         }
@@ -156,7 +162,8 @@
                             //onRefresh: onRefresh,
                             duration:60000, //1 minute Window
                             refresh: 500,
-                            delay : 1000
+                            delay : 1000,
+                            ttl: 120000 //2 minutes data persistence
                             
                         }
                     }],
@@ -273,6 +280,14 @@
             $('#stopButton').text('Restart Plot')
             break;
         }
+    }
+
+    function startRecording(){
+        websocket.send("start");
+    }
+
+    function stopRecording(){
+        websocket.send("stop");
     }
 </script>
 </html>
