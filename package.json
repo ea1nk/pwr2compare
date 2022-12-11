@@ -19,7 +19,7 @@
   "dependencies": {
     "ant-plus": "^0.1.24",
     "body-parser": "^1.19.0",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "fit-file-parser": "^1.6.15",
     "fs": "0.0.1-security",
     "multer": "^1.4.2",
