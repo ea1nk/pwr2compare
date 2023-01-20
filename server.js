@@ -70,7 +70,7 @@ PowerMeterB.on('powerData', AntData => {
             if (DEBUG) console.log("[" + new Date(start_timeB) + "] " + data2send)
             if (sockets[0]) sockets[0].send(data2send)
             start_timeB = timeB
-            measureBufferA = []
+            measureBufferB = []
         }
     } 
 })
