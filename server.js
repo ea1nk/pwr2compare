@@ -39,19 +39,19 @@ if (!AntPlusStick.open()) {
 
 PowerMeterA.on('powerData', AntData => {
     let timeA = Date.now(); //Time of measure
+    measureBufferA.push(AntData.Power)
     if (timeA - start_timeA > average_factor * 1000) {
-        AntData.timestamp = timeA;
-        AntData.Power = average(measureBufferA)
-        AntData.Averaging = average_factor
-        let data2send = JSON.stringify({ "measures0": AntData })
-        if (DEBUG) console.log("[" + new Date(start_timeA) + "] " + data2send)
-        if (sockets[0]) sockets[0].send(data2send)
-        start_timeA = timeA
-        measureBufferA = []
-    } else {
-        measureBufferA.push(AntData.Power)
-    }
-
+        if(measureBufferA.length > 0) {
+            AntData.timestamp = timeA;
+            AntData.Power = average(measureBufferA)
+            AntData.Averaging = average_factor
+            let data2send = JSON.stringify({ "measures0": AntData })
+            if (DEBUG) console.log("[" + new Date(start_timeA) + "] " + data2send)
+            if (sockets[0]) sockets[0].send(data2send)
+            start_timeA = timeA
+            measureBufferA = []
+        }
+    } 
 })
 
 PowerMeterA.on('error', err => {
@@ -59,20 +59,20 @@ PowerMeterA.on('error', err => {
 })
 
 PowerMeterB.on('powerData', AntData => {
-    //console.log(AntData);
     let timeB = Date.now(); //Time of measure
+    measureBufferB.push(AntData.Power)
     if (timeB - start_timeB > average_factor * 1000) {
-        AntData.timestamp = timeB;
-        AntData.Power = average(measureBufferB);
-        AntData.Averaging = average_factor
-        let data2send = JSON.stringify({ "measures1": AntData })
-        if (DEBUG) console.log("[" + new Date(start_timeB) + "] " + data2send)
-        if (sockets[0]) sockets[0].send(data2send);
-        start_timeB = timeB
-        measureBufferB = []
-    } else {
-        measureBufferB.push(AntData.Power)
-    }
+        if(measureBufferB.length > 0) {
+            AntData.timestamp = timeB;
+            AntData.Power = average(measureBufferB)
+            AntData.Averaging = average_factor
+            let data2send = JSON.stringify({ "measures1": AntData })
+            if (DEBUG) console.log("[" + new Date(start_timeB) + "] " + data2send)
+            if (sockets[0]) sockets[0].send(data2send)
+            start_timeB = timeB
+            measureBufferA = []
+        }
+    } 
 })
 
 PowerMeterB.on('error', err => {
