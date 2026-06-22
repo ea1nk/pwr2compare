@@ -22,8 +22,8 @@
   },
   "dependencies": {
     "ant-plus": "^0.1.24",
-    "body-parser": "^1.20.3",
-    "express": "^4.21.2",
+    "body-parser": "^1.20.5",
+    "express": "^4.22.2",
     "fit-file-parser": "^1.6.15",
     "fs": "0.0.1-security",
     "multer": "^2.1.1",
